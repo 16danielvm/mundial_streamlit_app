@@ -286,8 +286,12 @@ def parse_dt(dt_value, user_tz):
     return datetime.fromisoformat(str(dt_value)).astimezone(user_tz)
 
 
-def can_predict(match_datetime_text):
-    match_dt_utc = datetime.fromisoformat(match_datetime_text).astimezone(UTC)
+def can_predict(match_datetime_value):
+    if isinstance(match_datetime_value, datetime):
+        match_dt_utc = match_datetime_value.astimezone(UTC)
+    else:
+        match_dt_utc = datetime.fromisoformat(str(match_datetime_value)).astimezone(UTC)
+
     return now_utc() < match_dt_utc
 
 
