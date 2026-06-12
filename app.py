@@ -279,8 +279,11 @@ def execute(query, params=()):
         conn.close()
 
 
-def parse_dt(dt_text, user_tz):
-    return datetime.fromisoformat(dt_text).astimezone(user_tz)
+def parse_dt(dt_value, user_tz):
+    if isinstance(dt_value, datetime):
+        return dt_value.astimezone(user_tz)
+
+    return datetime.fromisoformat(str(dt_value)).astimezone(user_tz)
 
 
 def can_predict(match_datetime_text):
