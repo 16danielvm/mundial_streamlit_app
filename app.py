@@ -637,6 +637,39 @@ def tab_standings():
     standings.insert(0, "posición", range(1, len(standings) + 1))
     st.dataframe(standings, use_container_width=True, hide_index=True)
 
+def tab_all_predictions(user_tz):
+    st.subheader("Predicciones de todos")
+
+    matches = read_df("SELECT * FROM matches ORDER BY match_datetime ASC")
+
+    options = {format_match(row, user_tz): int(row["id"]) for _, row in matches.iterrows()}
+    selected = st.selectbox("Selecciona un partido", list(options.keys()), key="all_predictions_match")
+    match_id = options[selected]
+    match = matches[matches["id"] == match_id].iloc[0]
+
+    if can_predict(match["match_datetime"]):
+        st.warning("Las predicciones de este partido se mostrarán cuando inicie el partido.")
+        return
+
+    preds = read_df(
+        """
+        SELECT 
+            u.name AS jugador,
+            p.predicted_home_score || ' - ' || p.predicted_away_score AS prediccion,
+            p.points AS puntos
+        FROM predictions p
+        JOIN users u ON u.id = p.user_id
+        WHERE p.match_id = %s
+        ORDER BY u.name ASC
+        """,
+        (match_id,),
+    )
+
+    if preds.empty:
+        st.info("Nadie registró predicción para este partido.")
+    else:
+        st.dataframe(preds, use_container_width=True, hide_index=True)
+
 
 def tab_admin(user_tz):
     st.subheader("Panel de administrador")
@@ -719,12 +752,13 @@ def main():
     main_header(user_tz, user_tz_name)
     user_id, username = sidebar_auth()
 
-    tab1, tab2, tab3, tab4 = st.tabs([
+    tab1, tab2, tab3, tab4, tab5 = st.tabs([
         "⚽ Predicciones",
         "📅 Calendario",
         "🏆 Clasificación",
+        "👀 Predicciones de todos",
         "👑 Admin",
-    ])
+    ])  
 
     with tab1:
         tab_predictions(user_id, username, user_tz)
@@ -733,6 +767,8 @@ def main():
     with tab3:
         tab_standings()
     with tab4:
+        tab_all_predictions(user_tz)
+    with tab5:
         tab_admin(user_tz)
 
 
