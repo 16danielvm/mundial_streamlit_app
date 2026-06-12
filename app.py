@@ -263,11 +263,18 @@ def read_df(query, params=()):
 def execute(query, params=()):
     conn = get_conn()
     cur = conn.cursor()
-    cur.execute(query, params)
-    conn.commit()
-    last_id = cur.lastrowid
-    conn.close()
-    return last_id
+
+    try:
+        cur.execute(query, params)
+        conn.commit()
+
+    except Exception:
+        conn.rollback()
+        raise
+
+    finally:
+        cur.close()
+        conn.close()
 
 
 def parse_dt(dt_text, user_tz):
@@ -302,7 +309,7 @@ def register_user(name, username, password):
         )
         return True, "Usuario registrado correctamente. Ahora puedes iniciar sesión."
 
-    except sqlite3.IntegrityError:
+    except psycopg2.IntegrityError:
         return False, "Ese nombre de usuario ya existe. Elige otro."
 
 
