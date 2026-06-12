@@ -5,6 +5,7 @@ import streamlit as st
 from predictions import recalculate_match_points, format_match
 import pandas as pd
 from config import ADMIN_PIN, ET, UTC
+from football_data_service import update_results_from_api
 
 
 def add_match(home_team, away_team, match_date, match_time, stadium, stage):
@@ -40,6 +41,28 @@ def tab_admin(user_tz):
     st.success("Acceso de administrador concedido.")
     st.info("Al añadir partidos manualmente, captura la hora oficial del Este de Estados Unidos.")
 
+    st.markdown("### 🔄 Resultados automáticos")
+
+    if st.button("Actualizar resultados desde Football-Data"):
+        try:
+            updated, skipped = update_results_from_api()
+
+            if updated > 0:
+                st.success(f"Se actualizaron {updated} partido(s) y se recalcularon los puntos.")
+            else:
+                st.info("No se encontraron partidos nuevos para actualizar.")
+
+            if skipped:
+                st.warning("Algunos partidos finalizados no se encontraron en tu base:")
+                for match in skipped:
+                    st.write(f"- {match}")
+
+        except Exception as e:
+            st.error("No se pudieron actualizar los resultados desde Football-Data.")
+            st.error(str(e))
+
+    st.divider()
+    
     st.markdown("### Añadir partido")
     with st.form("add_match_form"):
         c1, c2 = st.columns(2)
