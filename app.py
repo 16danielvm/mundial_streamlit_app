@@ -24,7 +24,12 @@ st.set_page_config(
 
 
 def get_conn():
-    return psycopg2.connect(st.secrets["DATABASE_URL"])
+    try:
+        return psycopg2.connect(st.secrets["DATABASE_URL"])
+    except Exception as e:
+        st.error("No se pudo conectar a la base de datos.")
+        st.error(str(e))
+        st.stop()
 
 
 def now_utc():
