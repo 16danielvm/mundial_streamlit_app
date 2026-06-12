@@ -10,6 +10,7 @@ from admin import tab_admin
 from achievements import tab_achievements
 from mvp import tab_daily_mvp
 from stats import tab_my_stats
+from account import tab_account
 
 
 st.set_page_config(
@@ -37,7 +38,7 @@ def main():
 
     user_id, username = sidebar_auth()
 
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs([
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs([
         "⚽ Predicciones",
         "📅 Calendario",
         "🏆 Clasificación",
@@ -45,8 +46,9 @@ def main():
         "🏅 Logros",
         "⭐ MVP",
         "📊 Mis estadísticas",
+        "⚙️ Mi cuenta",
         "👑 Admin",
-    ])
+])
 
     with tab1:
         tab_predictions(user_id, username, user_tz)
@@ -70,6 +72,9 @@ def main():
         tab_my_stats(user_id, username, user_tz)
 
     with tab8:
+        tab_account(user_id, username)
+
+    with tab9:
         tab_admin(user_tz)
 
 

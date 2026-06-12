@@ -1,8 +1,9 @@
 import bcrypt
 import psycopg2
 import streamlit as st
-from database import get_conn, execute
+from database import get_conn, execute, read_df
 from utils import now_utc
+import secrets
 
 def hash_password(password):
     password_bytes = password.encode("utf-8")
@@ -125,3 +126,86 @@ def sidebar_auth():
                     st.sidebar.error(msg)
 
     return None, None
+
+def change_password(user_id, current_password, new_password, confirm_password):
+    current_password = current_password.strip()
+    new_password = new_password.strip()
+    confirm_password = confirm_password.strip()
+
+    if not current_password or not new_password or not confirm_password:
+        return False, "Todos los campos son obligatorios."
+
+    if new_password != confirm_password:
+        return False, "Las nuevas contraseñas no coinciden."
+
+    if len(new_password) < 6:
+        return False, "La nueva contraseña debe tener al menos 6 caracteres."
+
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute(
+        """
+        SELECT password_hash
+        FROM users
+        WHERE id = %s
+        """,
+        (user_id,),
+    )
+
+    row = cur.fetchone()
+    conn.close()
+
+    if not row:
+        return False, "Usuario no encontrado."
+
+    password_hash = row[0]
+
+    if not verify_password(current_password, password_hash):
+        return False, "La contraseña actual es incorrecta."
+
+    new_hash = hash_password(new_password)
+
+    execute(
+        """
+        UPDATE users
+        SET password_hash = %s
+        WHERE id = %s
+        """,
+        (new_hash, user_id),
+    )
+
+    return True, "Contraseña actualizada correctamente."
+
+
+def admin_reset_password(username):
+    username = username.strip().lower()
+
+    if not username:
+        return False, "Debes seleccionar un usuario.", None
+
+    temp_password = secrets.token_hex(4)
+    new_hash = hash_password(temp_password)
+
+    result = read_df(
+        """
+        SELECT id
+        FROM users
+        WHERE username = %s
+        """,
+        (username,),
+    )
+
+    if result.empty:
+        return False, "Usuario no encontrado.", None
+
+    execute(
+        """
+        UPDATE users
+        SET password_hash = %s
+        WHERE username = %s
+        """,
+        (new_hash, username),
+    )
+
+    return True, "Contraseña temporal generada correctamente.", temp_password

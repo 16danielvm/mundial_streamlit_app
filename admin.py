@@ -7,6 +7,7 @@ import pandas as pd
 from config import ADMIN_PIN, ET, UTC
 from football_data_service import update_results_from_api
 from match_service import update_result
+from auth import admin_reset_password
 
 
 def add_match(home_team, away_team, match_date, match_time, stadium, stage):
@@ -99,6 +100,43 @@ def tab_admin(user_tz):
         update_result(match_id, int(real_home), int(real_away))
         st.success("Resultado guardado y puntos recalculados.")
         st.rerun()
+
+        st.divider()
+    st.markdown("### 👥 Gestión de usuarios")
+
+    users = read_df(
+        """
+        SELECT name, username
+        FROM users
+        ORDER BY name ASC
+        """
+    )
+
+    if users.empty:
+        st.info("No hay usuarios registrados.")
+    else:
+        user_options = {
+            f"{row['name']} (@{row['username']})": row["username"]
+            for _, row in users.iterrows()
+        }
+
+        selected_user = st.selectbox(
+            "Selecciona un usuario",
+            list(user_options.keys()),
+            key="reset_password_user"
+        )
+
+        username_to_reset = user_options[selected_user]
+
+        if st.button("Generar contraseña temporal"):
+            ok, msg, temp_password = admin_reset_password(username_to_reset)
+
+            if ok:
+                st.success(msg)
+                st.code(temp_password, language="text")
+                st.info("Envía esta contraseña temporal al usuario. Luego podrá cambiarla en la pestaña Mi cuenta.")
+            else:
+                st.error(msg)
 
     st.divider()
     st.markdown("### Datos crudos")
