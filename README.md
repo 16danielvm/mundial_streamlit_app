@@ -18,7 +18,7 @@ Ejecuta la aplicación:
 streamlit run app.py
 ```
 
-## Clave de administrador
+<!-- ## Clave de administrador
 
 La clave inicial es:
 
@@ -36,7 +36,7 @@ La app crea automáticamente un archivo llamado:
 quiniela_mundial.db
 ```
 
-Ahí se guardan usuarios, partidos, predicciones y resultados.
+Ahí se guardan usuarios, partidos, predicciones y resultados. -->
 
 ## Puntuación
 
