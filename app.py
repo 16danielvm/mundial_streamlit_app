@@ -9,6 +9,56 @@ import pandas as pd
 import streamlit as st
 from streamlit_js_eval import streamlit_js_eval
 
+FLAGS = {
+    "México": "🇲🇽",
+    "Estados Unidos": "🇺🇸",
+    "Canadá": "🇨🇦",
+    "Argentina": "🇦🇷",
+    "Brasil": "🇧🇷",
+    "España": "🇪🇸",
+    "Francia": "🇫🇷",
+    "Alemania": "🇩🇪",
+    "Japón": "🇯🇵",
+    "Colombia": "🇨🇴",
+    "Inglaterra": "🏴",
+    "Portugal": "🇵🇹",
+    "Croacia": "🇭🇷",
+    "Marruecos": "🇲🇦",
+    "Australia": "🇦🇺",
+    "Paraguay": "🇵🇾",
+    "Uruguay": "🇺🇾",
+    "Egipto": "🇪🇬",
+    "Suecia": "🇸🇪",
+    "Suiza": "🇨🇭",
+    "Países Bajos": "🇳🇱",
+    "Arabia Saudí": "🇸🇦",
+    "República de Corea": "🇰🇷",
+    "República Checa": "🇨🇿",
+    "Sudáfrica": "🇿🇦",
+    "Catar": "🇶🇦",
+    "Bosnia y Herzegovina": "🇧🇦",
+    "Haití": "🇭🇹",
+    "Escocia": "🏴",
+    "Curazao": "🇨🇼",
+    "Costa de Marfil": "🇨🇮",
+    "Ecuador": "🇪🇨",
+    "Túnez": "🇹🇳",
+    "Bélgica": "🇧🇪",
+    "RI de Irán": "🇮🇷",
+    "Nueva Zelanda": "🇳🇿",
+    "Senegal": "🇸🇳",
+    "Irak": "🇮🇶",
+    "Argelia": "🇩🇿",
+    "Austria": "🇦🇹",
+    "Jordania": "🇯🇴",
+    "RD Congo": "🇨🇩",
+    "Ghana": "🇬🇭",
+    "Panamá": "🇵🇦",
+    "Uzbekistán": "🇺🇿",
+    "Cabo Verde": "🇨🇻",
+    "Noruega": "🇳🇴",
+    "Turquía": "🇹🇷"
+}
 
 ET = ZoneInfo("America/New_York")
 UTC = ZoneInfo("UTC")
@@ -374,6 +424,8 @@ def calculate_points(pred_home, pred_away, real_home, real_away):
         return 1
     return 0
 
+def flag(team):
+    return FLAGS.get(team, "🏳️")
 
 def recalculate_match_points(match_id):
     conn = get_conn()
@@ -426,7 +478,12 @@ def upsert_prediction(user_id, match_id, pred_home, pred_away):
 
 def format_match(row, user_tz):
     dt = parse_dt(row["match_datetime"], user_tz)
-    return f"{row['home_team']} vs {row['away_team']} — {dt.strftime('%d/%m/%Y %H:%M')}"
+    return (
+        f"{flag(row['home_team'])} {row['home_team']} "
+        f"vs "
+        f"{flag(row['away_team'])} {row['away_team']} "
+        f"— {dt.strftime('%d/%m/%Y %H:%M')}"
+    )
 
 
 def add_match(home_team, away_team, match_date, match_time, stadium, stage):
@@ -534,8 +591,15 @@ def tab_predictions(user_id, username, user_tz):
     dt = parse_dt(match["match_datetime"], user_tz)
 
     col1, col2, col3 = st.columns(3)
-    col1.metric("Local", match["home_team"])
-    col2.metric("Visitante", match["away_team"])
+    col1.metric(
+        "Local",
+        f"{flag(match['home_team'])} {match['home_team']}"
+    )
+
+    col2.metric(
+        "Visitante",
+        f"{flag(match['away_team'])} {match['away_team']}"
+    )
     col3.metric("Inicio", dt.strftime("%d/%m/%Y %H:%M"))
 
     if locked:
@@ -599,7 +663,11 @@ def tab_calendar(user_tz):
 
     df["fecha"] = df["match_datetime"].apply(lambda x: parse_dt(x, user_tz).strftime("%d/%m/%Y"))
     df["hora"] = df["match_datetime"].apply(lambda x: parse_dt(x, user_tz).strftime("%H:%M"))
-    df["partido"] = df["home_team"] + " vs " + df["away_team"]
+    df["partido"] = (
+        df["home_team"].apply(lambda x: f"{flag(x)} {x}")
+        + " vs "
+        + df["away_team"].apply(lambda x: f"{flag(x)} {x}")
+    )
     df["resultado"] = df.apply(
         lambda r: "Pendiente" if pd.isna(r["home_score"]) else f"{int(r['home_score'])} - {int(r['away_score'])}",
         axis=1,
