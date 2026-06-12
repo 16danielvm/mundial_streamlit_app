@@ -9,13 +9,12 @@ import pandas as pd
 import streamlit as st
 from streamlit_js_eval import streamlit_js_eval
 
-BASE_DIR = Path(__file__).resolve().parent
 
 ET = ZoneInfo("America/New_York")
 UTC = ZoneInfo("UTC")
 DEFAULT_TZ_NAME = "America/Mexico_City"
 DEFAULT_TZ = ZoneInfo(DEFAULT_TZ_NAME)
-ADMIN_PIN = "admin123"
+ADMIN_PIN = st.secrets.get("ADMIN_PIN", "Control16")
 
 st.set_page_config(
     page_title="Quiniela Mundial 2026",
@@ -74,30 +73,30 @@ def init_db():
     cur = conn.cursor()
 
     cur.execute(
-        """
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            username TEXT NOT NULL UNIQUE,
-            password_hash TEXT NOT NULL,
-            created_at TEXT NOT NULL
-        )
-        """
+    """
+    CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        name TEXT NOT NULL,
+        username TEXT NOT NULL UNIQUE,
+        password_hash TEXT NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL
     )
+    """
+)
 
     cur.execute(
         """
         CREATE TABLE IF NOT EXISTS matches (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             home_team TEXT NOT NULL,
             away_team TEXT NOT NULL,
-            match_datetime TEXT NOT NULL,
+            match_datetime TIMESTAMPTZ NOT NULL,
             stadium TEXT,
             stage TEXT,
             status TEXT NOT NULL DEFAULT 'Pendiente',
             home_score INTEGER,
             away_score INTEGER,
-            created_at TEXT NOT NULL
+            created_at TIMESTAMPTZ NOT NULL
         )
         """
     )
@@ -105,17 +104,15 @@ def init_db():
     cur.execute(
         """
         CREATE TABLE IF NOT EXISTS predictions (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER NOT NULL,
-            match_id INTEGER NOT NULL,
+            id SERIAL PRIMARY KEY,
+            user_id INTEGER NOT NULL REFERENCES users(id),
+            match_id INTEGER NOT NULL REFERENCES matches(id),
             predicted_home_score INTEGER NOT NULL,
             predicted_away_score INTEGER NOT NULL,
             points INTEGER DEFAULT 0,
-            created_at TEXT NOT NULL,
-            updated_at TEXT NOT NULL,
-            UNIQUE(user_id, match_id),
-            FOREIGN KEY(user_id) REFERENCES users(id),
-            FOREIGN KEY(match_id) REFERENCES matches(id)
+            created_at TIMESTAMPTZ NOT NULL,
+            updated_at TIMESTAMPTZ NOT NULL,
+            UNIQUE(user_id, match_id)
         )
         """
     )
