@@ -199,7 +199,7 @@ def seed_matches(conn):
         ("Catar", "Suiza", et_to_utc(2026, 6, 13, 15), "Estadio Bahía de San Francisco", "Grupo B"),
         ("Brasil", "Marruecos", et_to_utc(2026, 6, 13, 18), "Estadio Nueva York Nueva Jersey", "Grupo C"),
         ("Haití", "Escocia", et_to_utc(2026, 6, 13, 21), "Estadio Boston", "Grupo C"),
-        ("Australia", "Turquía", et_to_utc(2026, 6, 13, 23, 59), "Estadio BC Place Vancouver", "Grupo D"),
+        ("Australia", "Turquía", et_to_utc(2026, 6, 14, 0), "Estadio BC Place Vancouver", "Grupo D"),
 
         # Domingo, 14 de junio 2026
         ("Alemania", "Curazao", et_to_utc(2026, 6, 14, 13), "Estadio Houston", "Grupo E"),
@@ -217,7 +217,7 @@ def seed_matches(conn):
         ("Francia", "Senegal", et_to_utc(2026, 6, 16, 15), "Estadio Nueva York Nueva Jersey", "Grupo I"),
         ("Irak", "Noruega", et_to_utc(2026, 6, 16, 18), "Estadio Boston", "Grupo I"),
         ("Argentina", "Argelia", et_to_utc(2026, 6, 16, 21), "Estadio Kansas City", "Grupo J"),
-        ("Austria", "Jordania", et_to_utc(2026, 6, 16, 23, 59), "Estadio Bahía de San Francisco", "Grupo J"),
+        ("Austria", "Jordania", et_to_utc(2026, 6, 17, 0), "Estadio Bahía de San Francisco", "Grupo J"),
 
         # Miércoles, 17 de junio 2026
         ("Portugal", "RD Congo", et_to_utc(2026, 6, 17, 13), "Estadio Houston", "Grupo K"),
@@ -235,13 +235,13 @@ def seed_matches(conn):
         ("Estados Unidos", "Australia", et_to_utc(2026, 6, 19, 15), "Estadio Seattle", "Grupo D"),
         ("Escocia", "Marruecos", et_to_utc(2026, 6, 19, 18), "Estadio Boston", "Grupo C"),
         ("Brasil", "Haití", et_to_utc(2026, 6, 19, 21), "Estadio Filadelfia", "Grupo C"),
-        ("Turquía", "Paraguay", et_to_utc(2026, 6, 19, 23, 59), "Estadio Bahía de San Francisco", "Grupo D"),
+        ("Turquía", "Paraguay", et_to_utc(2026, 6, 20, 0), "Estadio Bahía de San Francisco", "Grupo D"),
 
         # Sábado, 20 de junio 2026
         ("Países Bajos", "Suecia", et_to_utc(2026, 6, 20, 13), "Estadio Houston", "Grupo F"),
         ("Alemania", "Costa de Marfil", et_to_utc(2026, 6, 20, 16), "Estadio Toronto", "Grupo E"),
         ("Ecuador", "Curazao", et_to_utc(2026, 6, 20, 22), "Estadio Kansas City", "Grupo E"),
-        ("Túnez", "Japón", et_to_utc(2026, 6, 20, 23, 59), "Estadio Monterrey", "Grupo F"),
+        ("Túnez", "Japón", et_to_utc(2026, 6, 21, 0), "Estadio Monterrey", "Grupo F"),
 
         # Domingo, 21 de junio 2026
         ("España", "Arabia Saudí", et_to_utc(2026, 6, 21, 12), "Estadio Atlanta", "Grupo H"),
