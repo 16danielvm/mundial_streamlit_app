@@ -2,10 +2,11 @@ from database import execute, read_df
 from utils import now_utc
 from datetime import datetime, date, time
 import streamlit as st
-from predictions import recalculate_match_points, format_match
+from predictions import format_match
 import pandas as pd
 from config import ADMIN_PIN, ET, UTC
 from football_data_service import update_results_from_api
+from match_service import update_result
 
 
 def add_match(home_team, away_team, match_date, match_time, stadium, stage):
@@ -19,17 +20,7 @@ def add_match(home_team, away_team, match_date, match_time, stadium, stage):
     )
 
 
-def update_result(match_id, home_score, away_score):
-    status = "Finalizado" if home_score is not None and away_score is not None else "Pendiente"
-    execute(
-        """
-        UPDATE matches
-        SET home_score = %s, away_score = %s, status = %s
-        WHERE id = %s
-        """,
-        (home_score, away_score, status, match_id),
-    )
-    recalculate_match_points(match_id)
+
 
 def tab_admin(user_tz):
     st.subheader("Panel de administrador")

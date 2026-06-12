@@ -2,7 +2,7 @@ import requests
 import streamlit as st
 
 from database import read_df
-from admin import update_result
+from match_service import update_result
 
 
 TEAM_NAME_MAP = {
