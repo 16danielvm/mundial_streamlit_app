@@ -838,8 +838,8 @@ def tab_achievements():
         st.info("Aún no hay partidos finalizados con predicciones para calcular logros.")
         return
 
-    col1, col2 = st.columns(2)
-    col3, col4 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
+    col4, col5 = st.columns(2)
 
     # 👑 Rey del Marcador
     exactos = (
@@ -937,6 +937,24 @@ def tab_achievements():
             st.info("Todavía nadie desbloquea esta tragedia.")
         else:
             st.metric(row["jugador"], f"{int(row['valor'])} partidos")
+    
+    # 🫏 0 Ball Knowledge
+    zero_ball = (
+        finished_predictions
+        .groupby("jugador")
+        .agg(
+            partidos=("points", "count"),
+            aciertos=("points", lambda x: (x > 0).sum())
+        )
+        .reset_index()
+        .sort_values(["aciertos", "partidos"], ascending=True)
+    )
+
+    with col5:
+        st.markdown("### 🫏 0 Ball Knowledge")
+        st.caption("Participante con menos partidos acertados. El fútbol definitivamente no es lo suyo.")
+        row = zero_ball.iloc[0]
+        st.metric(row["jugador"], f"{int(row['aciertos'])} aciertos")
 
 
 def main():
