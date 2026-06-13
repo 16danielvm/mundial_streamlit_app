@@ -64,13 +64,12 @@ def render_match_card(row, user_tz):
         with c_top2:
             st.markdown(f"**{status_text}**")
 
-        c1, c2, c3 = st.columns([5, 2, 5])
+        c1, c2, c3 = st.columns([3, 2, 3])
 
         with c1:
             left, center, right = st.columns([1, 2, 1])
             with center:
                 st.markdown(f"## {flag(row['home_team'])}")
-                st.markdown(f"**{row['home_team']}**")
 
         with c2:
             left, center, right = st.columns([1, 4, 1])
@@ -81,7 +80,6 @@ def render_match_card(row, user_tz):
             left, center, right = st.columns([1, 2, 1])
             with center:
                 st.markdown(f"## {flag(row['away_team'])}")
-                st.markdown(f"**{row['away_team']}**")
 
         st.caption(row["stage"])
 
