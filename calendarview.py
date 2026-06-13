@@ -14,18 +14,7 @@ def get_match_display_status(row, user_tz):
     if now < match_dt:
         return match_dt.strftime("%H:%M")
 
-    elapsed = int((now - match_dt).total_seconds() // 60)
-
-    if elapsed < 45:
-        return "En vivo · Primer tiempo"
-
-    if elapsed < 60:
-        return "Descanso"
-
-    if elapsed < 105:
-        return "En vivo · Segundo tiempo"
-
-    return "En vivo"
+    return "En juego"
 
 def render_match_card(row, user_tz):
     status_text = get_match_display_status(row, user_tz)
