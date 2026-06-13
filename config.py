@@ -30,7 +30,7 @@ FLAGS = {
     "Catar": "🇶🇦",
     "Bosnia y Herzegovina": "🇧🇦",
     "Haití": "🇭🇹",
-    "Escocia": "🇬🇧",
+    "Escocia": "Escocia",
     "Curazao": "🇨🇼",
     "Costa de Marfil": "🇨🇮",
     "Ecuador": "🇪🇨",
