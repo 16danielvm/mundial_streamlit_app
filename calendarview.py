@@ -52,36 +52,19 @@ def get_match_display_status(row, user_tz):
 def render_match_card(row, user_tz):
     status_text = get_match_display_status(row, user_tz)
 
-    home_score = "-" if pd.isna(row["home_score"]) else int(row["home_score"])
-    away_score = "-" if pd.isna(row["away_score"]) else int(row["away_score"])
+    home_score = "" if pd.isna(row["home_score"]) else int(row["home_score"])
+    away_score = "" if pd.isna(row["away_score"]) else int(row["away_score"])
 
     with st.container(border=True):
-        c_top1, c_top2 = st.columns([2, 1])
+        c_teams, c_score= st.columns([5, 2])
 
-        with c_top1:
-            st.caption("Copa Mundial FIFA 2026")
+        with c_teams:
+            st.markdown(f"### {flag(row['home_team'])} {row['home_team']}")
+            st.markdown(f"### {flag(row['away_team'])} {row['away_team']}")
 
-        with c_top2:
-            st.markdown(f"**{status_text}**")
-
-        c1, c2, c3 = st.columns([3, 2, 3])
-
-        with c1:
-            left, center, right = st.columns([1, 2, 1])
-            with center:
-                st.markdown(f"# {flag(row['home_team'])}")
-
-        with c2:
-            left, center, right = st.columns([1, 4, 1])
-            with center:
-                st.markdown(f"## {home_score} - {away_score}")
-
-        with c3:
-            left, center, right = st.columns([1, 2, 1])
-            with center:
-                st.markdown(f"# {flag(row['away_team'])}")
-
-        st.caption(row["stage"])
+        with c_score:
+            st.markdown(f"### {home_score}")
+            st.markdown(f"### {away_score}")
 
 def tab_calendar(user_tz):
     st.subheader("Calendario de partidos")
