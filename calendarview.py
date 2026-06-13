@@ -52,19 +52,27 @@ def get_match_display_status(row, user_tz):
 def render_match_card(row, user_tz):
     status_text = get_match_display_status(row, user_tz)
 
-    home_score = "" if pd.isna(row["home_score"]) else int(row["home_score"])
-    away_score = "" if pd.isna(row["away_score"]) else int(row["away_score"])
+    home_score = "-" if pd.isna(row["home_score"]) else int(row["home_score"])
+    away_score = "-" if pd.isna(row["away_score"]) else int(row["away_score"])
 
     with st.container(border=True):
-        c_teams, c_score= st.columns([3, 1])
 
-        with c_teams:
-            st.markdown(f"### {flag(row['home_team'])}")
-            st.markdown(f"### {flag(row['away_team'])}")
+        # Estado arriba
+        st.caption(status_text)
 
-        with c_score:
-            st.markdown(f"### {home_score}")
-            st.markdown(f"### {away_score}")
+        # Banderas
+        c1, c2, c3 = st.columns([1,2,1])
+
+        with c1:
+            st.markdown(f"## {flag(row['home_team'])}")
+
+        with c2:
+            st.markdown(f"## {home_score} - {away_score}")
+
+        with c3:
+            st.markdown(f"## {flag(row['away_team'])}")
+
+        st.caption(row["stage"])
 
 def tab_calendar(user_tz):
     st.subheader("Calendario de partidos")
@@ -85,11 +93,11 @@ def tab_calendar(user_tz):
     if not today_matches.empty:
         st.markdown("### Partidos de hoy")
 
-        # cols = st.columns(1)
+        cols = st.columns(4)
 
         for idx, (_, row) in enumerate(today_matches.iterrows()):
-        #     with cols[idx % 2]:
-            render_match_card(row, user_tz)
+            with cols[idx % 4]:
+                render_match_card(row, user_tz)
 
         st.divider()
 
