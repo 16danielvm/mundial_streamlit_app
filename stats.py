@@ -35,6 +35,7 @@ def get_user_position(user_id):
             COUNT(p.id) AS predicciones
         FROM users u
         LEFT JOIN predictions p ON p.user_id = u.id
+        WHERE u.username <> 'modeloxgb'
         GROUP BY u.id
         ORDER BY puntos DESC, exactos DESC, resultados DESC, predicciones DESC
         """
@@ -70,6 +71,7 @@ def get_user_badges(user_id, user_tz):
         JOIN matches m ON m.id = p.match_id
         WHERE m.home_score IS NOT NULL
           AND m.away_score IS NOT NULL
+          AND u.username <> 'modeloxgb'
         ORDER BY u.name, m.match_datetime ASC
         """
     )

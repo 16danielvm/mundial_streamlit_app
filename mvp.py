@@ -101,6 +101,7 @@ def get_daily_mvps(user_tz):
         JOIN matches m ON m.id = p.match_id
         WHERE m.home_score IS NOT NULL
           AND m.away_score IS NOT NULL
+          AND u.username <> 'modeloxgb'
         ORDER BY m.match_datetime ASC
         """
     )
