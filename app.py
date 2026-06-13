@@ -77,6 +77,20 @@ def main():
     with tab9:
         tab_admin(user_tz)
 
+    st.divider()
+
+    st.markdown(
+    """
+    <div style='text-align:center; color:gray; font-size:14px'>
+    ⚽ Quiniela Mundial 2026 | Desarrollada por <b>Daniel Muñoz</b> 🚀
+    <br>
+    <span style='font-size:12px'>
+    Creada durante la fiebre mundialista de 2026
+    </span>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 if __name__ == "__main__":
     main()
