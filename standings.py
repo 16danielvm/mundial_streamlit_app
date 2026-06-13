@@ -47,6 +47,18 @@ def show_position_evolution(user_tz):
     fechas = sorted(daily["fecha"].unique(), key=lambda x: pd.to_datetime(x, dayfirst=True))
     jugadores = sorted(daily["jugador"].unique())
 
+    fecha_inicio = "11/06/2026"
+
+    inicio = pd.DataFrame({
+        "jugador": jugadores,
+        "posicion": [len(jugadores)] * len(jugadores),
+        "fecha": [fecha_inicio] * len(jugadores),
+        "puntos": [0] * len(jugadores),
+        "exactos": [0] * len(jugadores),
+        "resultados": [0] * len(jugadores),
+        "predicciones": [0] * len(jugadores),
+    })
+
     acumulado = []
 
     for fecha in fechas:
@@ -86,7 +98,10 @@ def show_position_evolution(user_tz):
 
         acumulado.append(resumen)
 
-    evolution = pd.concat(acumulado, ignore_index=True)
+    evolution = pd.concat(
+        [inicio, pd.concat(acumulado, ignore_index=True)],
+        ignore_index=True
+    )   
 
     fig = px.line(
         evolution,
@@ -104,7 +119,9 @@ def show_position_evolution(user_tz):
     )
 
     fig.update_yaxes(
-        autorange="reversed",
+        range=[len(jugadores) + 0.5, 0.5],
+        tickmode="linear",
+        dtick=1,
         title="Posición"
     )
 
