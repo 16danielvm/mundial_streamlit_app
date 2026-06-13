@@ -16,14 +16,14 @@ def get_match_display_status(row, user_tz):
 
     elapsed = int((now - match_dt).total_seconds() // 60)
 
-    if elapsed <= 45:
-        return f"En vivo · {elapsed}'"
+    if elapsed < 45:
+        return "En vivo · Primer tiempo"
 
-    if elapsed <= 60:
+    if elapsed < 60:
         return "Descanso"
 
-    if elapsed <= 105:
-        return f"En vivo · {elapsed - 15}'"
+    if elapsed < 105:
+        return "En vivo · Segundo tiempo"
 
     return "En vivo"
 
@@ -33,73 +33,32 @@ def render_match_card(row, user_tz):
     home_score = "-" if pd.isna(row["home_score"]) else int(row["home_score"])
     away_score = "-" if pd.isna(row["away_score"]) else int(row["away_score"])
 
-    if status_text == "Finalizado":
-        status_color = "#94a3b8"
-    elif "En vivo" in status_text:
-        status_color = "#22c55e"
-    else:
-        status_color = "#38bdf8"
+    with st.container(border=True):
+        c_top1, c_top2 = st.columns([2, 1])
 
-    st.markdown(
-        f"""
-        <div style="
-            background:#111827;
-            border:1px solid #263244;
-            border-radius:18px;
-            padding:18px;
-            margin-bottom:16px;
-            color:white;
-        ">
-            <div style="
-                display:flex;
-                justify-content:space-between;
-                align-items:center;
-                margin-bottom:14px;
-                color:#cbd5e1;
-                font-size:13px;
-            ">
-                <span>Copa Mundial FIFA 2026</span>
-                <span style="color:{status_color}; font-weight:700;">{status_text}</span>
-            </div>
+        with c_top1:
+            st.caption("Copa Mundial FIFA 2026")
 
-            <div style="
-                display:grid;
-                grid-template-columns:1fr auto 1fr;
-                align-items:center;
-                gap:14px;
-                text-align:center;
-            ">
-                <div>
-                    <div style="font-size:34px;">{flag(row["home_team"])}</div>
-                    <div style="font-size:16px; margin-top:6px;">{row["home_team"]}</div>
-                </div>
+        with c_top2:
+            st.markdown(f"**{status_text}**")
 
-                <div style="
-                    font-size:34px;
-                    font-weight:700;
-                    white-space:nowrap;
-                ">
-                    {home_score} - {away_score}
-                </div>
+        c1, c2, c3 = st.columns([2, 1, 2])
 
-                <div>
-                    <div style="font-size:34px;">{flag(row["away_team"])}</div>
-                    <div style="font-size:16px; margin-top:6px;">{row["away_team"]}</div>
-                </div>
-            </div>
+        with c1:
+            st.markdown(f"## {flag(row['home_team'])}")
+            st.markdown(f"**{row['home_team']}**")
 
-            <div style="
-                text-align:center;
-                margin-top:14px;
-                color:#94a3b8;
-                font-size:13px;
-            ">
-                {row["stage"]}
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+        with c2:
+            st.markdown(
+                f"<h1 style='text-align:center;'>{home_score} - {away_score}</h1>",
+                unsafe_allow_html=True
+            )
+
+        with c3:
+            st.markdown(f"## {flag(row['away_team'])}")
+            st.markdown(f"**{row['away_team']}**")
+
+        st.caption(row["stage"])
 
 def tab_calendar(user_tz):
     st.subheader("Calendario de partidos")
