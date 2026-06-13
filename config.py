@@ -56,4 +56,4 @@ ET = ZoneInfo("America/New_York")
 UTC = ZoneInfo("UTC")
 DEFAULT_TZ_NAME = "America/Mexico_City"
 DEFAULT_TZ = ZoneInfo(DEFAULT_TZ_NAME)
-ADMIN_PIN = st.secrets.get("ADMIN_PIN", "Control16")
+ADMIN_PIN = st.secrets["ADMIN_PIN"]
