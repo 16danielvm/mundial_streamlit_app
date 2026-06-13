@@ -69,17 +69,17 @@ def render_match_card(row, user_tz):
         with c1:
             left, center, right = st.columns([1, 2, 1])
             with center:
-                st.markdown(f"## {flag(row['home_team'])}")
+                st.markdown(f"# {flag(row['home_team'])}")
 
         with c2:
             left, center, right = st.columns([1, 4, 1])
             with center:
-                st.markdown(f"# {home_score}-{away_score}")
+                st.markdown(f"## {home_score} - {away_score}")
 
         with c3:
             left, center, right = st.columns([1, 2, 1])
             with center:
-                st.markdown(f"## {flag(row['away_team'])}")
+                st.markdown(f"# {flag(row['away_team'])}")
 
         st.caption(row["stage"])
 
