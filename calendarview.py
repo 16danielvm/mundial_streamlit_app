@@ -2,37 +2,56 @@ import streamlit as st
 import pandas as pd
 from utils import parse_dt, flag, can_predict, now_user
 from database import read_df
+from football_data_service import get_live_world_cup_matches
+
+from streamlit_autorefresh import st_autorefresh
 
 
+def get_match_display_status(row, user_tz, live_data=None):
+    key = (row["home_team"], row["away_team"])
 
-def get_match_display_status(row, user_tz):
+    if live_data and key in live_data:
+        api_match = live_data[key]
+
+        minute = api_match.get("minute")
+
+        if minute is not None:
+            return f"En vivo · {minute}'"
+
+        match_dt = parse_dt(row["match_datetime"], user_tz)
+        now = now_user(user_tz)
+        elapsed = int((now - match_dt).total_seconds() // 60)
+
+        if elapsed < 0:
+            return match_dt.strftime("%H:%M")
+
+        return f"En vivo · {elapsed}'"
+
     match_dt = parse_dt(row["match_datetime"], user_tz)
-    now = now_user(user_tz)
 
     if not pd.isna(row["home_score"]) and not pd.isna(row["away_score"]):
         return "Finalizado"
 
-    if now < match_dt:
+    if now_user(user_tz) < match_dt:
         return match_dt.strftime("%H:%M")
-
-    elapsed = int((now - match_dt).total_seconds() // 60)
-
-    if elapsed <= 45:
-        return f"En vivo · {elapsed}'"
-
-    if elapsed <= 60:
-        return "Descanso"
-
-    if elapsed <= 105:
-        return f"En vivo · {elapsed - 15}'"
 
     return "En vivo"
 
-def render_match_card(row, user_tz):
-    status_text = get_match_display_status(row, user_tz)
+def render_match_card(row, user_tz, live_data=None):
+    key = (row["home_team"], row["away_team"])
+    api_match = live_data.get(key) if live_data else None
 
-    home_score = "-" if pd.isna(row["home_score"]) else int(row["home_score"])
-    away_score = "-" if pd.isna(row["away_score"]) else int(row["away_score"])
+    status_text = get_match_display_status(row, user_tz, live_data)
+
+    if api_match:
+        home_score = api_match.get("home_score")
+        away_score = api_match.get("away_score")
+    else:
+        home_score = row["home_score"]
+        away_score = row["away_score"]
+
+    home_score = "-" if pd.isna(home_score) else int(home_score)
+    away_score = "-" if pd.isna(away_score) else int(away_score)
 
     with st.container(border=True):
         c_top1, c_top2 = st.columns([2, 1])
@@ -62,6 +81,12 @@ def render_match_card(row, user_tz):
         st.caption(row["stage"])
 
 def tab_calendar(user_tz):
+
+    st_autorefresh(
+        interval=60000,
+        key="calendar_live_refresh"
+    )
+
     st.subheader("Calendario de partidos")
 
     df = read_df("SELECT * FROM matches ORDER BY match_datetime ASC")
@@ -80,13 +105,18 @@ def tab_calendar(user_tz):
     if not today_matches.empty:
         st.markdown("### Partidos de hoy")
 
+        try:
+            live_data = get_live_world_cup_matches()
+        except Exception:
+            live_data = {}
+
         cols = st.columns(2)
 
         for idx, (_, row) in enumerate(today_matches.iterrows()):
             with cols[idx % 2]:
-                render_match_card(row, user_tz)
+                render_match_card(row, user_tz, live_data)
 
-        st.divider()
+    st.divider()
 
     st.markdown("### Calendario completo")
 
