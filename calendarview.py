@@ -85,7 +85,7 @@ def tab_calendar(user_tz):
     if not today_matches.empty:
         st.markdown("### Partidos de hoy")
 
-        cols = st.columns(2)
+        cols = st.columns(1)
 
         for idx, (_, row) in enumerate(today_matches.iterrows()):
             with cols[idx % 2]:
