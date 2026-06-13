@@ -59,8 +59,8 @@ def render_match_card(row, user_tz):
         c_teams, c_score= st.columns([5, 2])
 
         with c_teams:
-            st.markdown(f"### {flag(row['home_team'])} {row['home_team']}")
-            st.markdown(f"### {flag(row['away_team'])} {row['away_team']}")
+            st.markdown(f"### {flag(row['home_team'])}")
+            st.markdown(f"### {flag(row['away_team'])}")
 
         with c_score:
             st.markdown(f"### {home_score}")
