@@ -64,7 +64,7 @@ def render_match_card(row, user_tz):
         with c_top2:
             st.markdown(f"**{status_text}**")
 
-        c1, c2, c3 = st.columns([3, 2, 3])
+        c1, c2, c3 = st.columns([5, 2, 5])
 
         with c1:
             left, center, right = st.columns([1, 2, 1])
