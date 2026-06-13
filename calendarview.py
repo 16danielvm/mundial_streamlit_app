@@ -56,7 +56,7 @@ def render_match_card(row, user_tz):
     away_score = "" if pd.isna(row["away_score"]) else int(row["away_score"])
 
     with st.container(border=True):
-        c_teams, c_score= st.columns()
+        c_teams, c_score= st.columns([3, 1])
 
         with c_teams:
             st.markdown(f"### {flag(row['home_team'])}")
