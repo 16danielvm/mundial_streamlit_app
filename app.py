@@ -57,7 +57,7 @@ def main():
         tab_calendar(user_tz)
 
     with tab3:
-        tab_standings()
+        tab_standings(user_tz)
 
     with tab4:
         tab_all_predictions(user_tz)

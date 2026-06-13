@@ -4,3 +4,4 @@ streamlit-js-eval>=0.1.7
 bcrypt
 psycopg2-binary
 requests
+plotly
