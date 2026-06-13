@@ -75,7 +75,7 @@ def render_match_card(row, user_tz):
         with c2:
             left, center, right = st.columns([1, 4, 1])
             with center:
-                st.markdown(f"# {home_score} - {away_score}")
+                st.markdown(f"# {home_score}-{away_score}")
 
         with c3:
             left, center, right = st.columns([1, 2, 1])
