@@ -115,15 +115,15 @@ def sidebar_auth():
         password = st.sidebar.text_input("Contraseña", type="password")
         confirm_password = st.sidebar.text_input("Confirmar contraseña", type="password")
 
-        # if st.sidebar.button("Crear cuenta"):
-        #     if password != confirm_password:
-        #         st.sidebar.error("Las contraseñas no coinciden.")
-        #     else:
-        #         ok, msg = register_user(name, username, password)
-        #         if ok:
-        #             st.sidebar.success(msg)
-        #         else:
-        #             st.sidebar.error(msg)
+        if st.sidebar.button("Crear cuenta"):
+            if password != confirm_password:
+                st.sidebar.error("Las contraseñas no coinciden.")
+            else:
+                ok, msg = register_user(name, username, password)
+                if ok:
+                    st.sidebar.success(msg)
+                else:
+                    st.sidebar.error(msg)
 
     return None, None
 

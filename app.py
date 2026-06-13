@@ -21,7 +21,7 @@ st.set_page_config(
 
 
 def main_header(user_tz, user_tz_name):
-    st.title("⚽ Quiniela Mundial 2026 sin pample")
+    st.title("⚽ Quiniela Mundial 2026 CON pample")
     st.caption("Predice marcadores, suma puntos y mira quién manda en la tabla. Sin VAR para excusas.")
     st.info(
         f"Horario detectado: {user_tz_name}. "
