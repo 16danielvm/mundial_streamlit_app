@@ -14,7 +14,40 @@ def get_match_display_status(row, user_tz):
     if now < match_dt:
         return match_dt.strftime("%H:%M")
 
-    return "En juego"
+    return "En juego'"
+
+# def render_match_card(row, user_tz):
+#     status_text = get_match_display_status(row, user_tz)
+
+#     home_score = "-" if pd.isna(row["home_score"]) else int(row["home_score"])
+#     away_score = "-" if pd.isna(row["away_score"]) else int(row["away_score"])
+
+#     with st.container(border=True):
+#         c_top1, c_top2 = st.columns([2, 1])
+
+#         with c_top1:
+#             st.caption("Copa Mundial FIFA 2026")
+
+#         with c_top2:
+#             st.markdown(f"**{status_text}**")
+
+#         c1, c2, c3 = st.columns([2, 1, 2])
+
+#         with c1:
+#             st.markdown(f"## {flag(row['home_team'])}")
+#             st.markdown(f"**{row['home_team']}**")
+
+#         with c2:
+#             st.markdown(
+#                 f"<h1 style='text-align:center;'>{home_score} - {away_score}</h1>",
+#                 unsafe_allow_html=True
+#             )
+
+#         with c3:
+#             st.markdown(f"## {flag(row['away_team'])}")
+#             st.markdown(f"**{row['away_team']}**")
+
+#         st.caption(row["stage"])
 
 def render_match_card(row, user_tz):
     status_text = get_match_display_status(row, user_tz)
@@ -31,21 +64,24 @@ def render_match_card(row, user_tz):
         with c_top2:
             st.markdown(f"**{status_text}**")
 
-        c1, c2, c3 = st.columns([2, 1, 2])
+        c1, c2, c3 = st.columns([3, 2, 3])
 
         with c1:
-            st.markdown(f"## {flag(row['home_team'])}")
-            st.markdown(f"**{row['home_team']}**")
+            left, center, right = st.columns([1, 2, 1])
+            with center:
+                st.markdown(f"## {flag(row['home_team'])}")
+                st.markdown(f"**{row['home_team']}**")
 
         with c2:
-            st.markdown(
-                f"<h1 style='text-align:center;'>{home_score} - {away_score}</h1>",
-                unsafe_allow_html=True
-            )
+            left, center, right = st.columns([1, 4, 1])
+            with center:
+                st.markdown(f"# {home_score} - {away_score}")
 
         with c3:
-            st.markdown(f"## {flag(row['away_team'])}")
-            st.markdown(f"**{row['away_team']}**")
+            left, center, right = st.columns([1, 2, 1])
+            with center:
+                st.markdown(f"## {flag(row['away_team'])}")
+                st.markdown(f"**{row['away_team']}**")
 
         st.caption(row["stage"])
 
