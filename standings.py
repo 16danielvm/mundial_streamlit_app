@@ -201,7 +201,25 @@ def tab_standings(user_tz):
     st.divider()
 
     st.markdown("### 🤖 Rendimiento del predictor")
-    show_standings_table(get_standings(modeloxgb=True))
+    model_standing = read_df(
+        """
+        SELECT
+            u.name AS jugador,
+            COALESCE(SUM(p.points), 0) AS puntos,
+            COUNT(p.id) AS predicciones,
+            SUM(CASE WHEN p.points = 3 THEN 1 ELSE 0 END) AS marcadores_exactos,
+            SUM(CASE WHEN p.points = 1 THEN 1 ELSE 0 END) AS resultados_acertados
+        FROM users u
+        LEFT JOIN predictions p ON p.user_id = u.id
+        WHERE u.username = 'modeloxgb'
+        GROUP BY u.id, u.name
+        """
+    )
+
+    if model_standing.empty:
+        st.info("El predictor todavía no tiene predicciones registradas.")
+    else:
+        st.dataframe(model_standing, use_container_width=True, hide_index=True)
 
     st.divider()
     show_position_evolution(user_tz)
