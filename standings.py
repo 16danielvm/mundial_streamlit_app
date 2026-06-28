@@ -5,6 +5,42 @@ import plotly.express as px
 from database import read_df
 from utils import parse_dt
 
+STAGES = [
+    "Fase de grupos",
+    "16avos",
+    "8avos",
+    "4tos",
+    "Semifinal",
+    "Final",
+]
+
+def get_standings(stage_filter=None):
+    where_extra = ""
+    params = []
+
+    if stage_filter:
+        where_extra = "AND m.stage = %s"
+        params.append(stage_filter)
+
+    return read_df(
+        f"""
+        SELECT
+            u.name AS jugador,
+            COALESCE(SUM(p.points), 0) AS puntos,
+            COUNT(p.id) AS predicciones,
+            SUM(CASE WHEN p.points = 3 THEN 1 ELSE 0 END) AS marcadores_exactos,
+            SUM(CASE WHEN p.points = 1 THEN 1 ELSE 0 END) AS resultados_acertados
+        FROM users u
+        LEFT JOIN predictions p ON p.user_id = u.id
+        LEFT JOIN matches m ON m.id = p.match_id
+        WHERE u.username <> 'modeloxgb'
+          {where_extra}
+        GROUP BY u.id, u.name
+        ORDER BY puntos DESC, marcadores_exactos DESC, resultados_acertados DESC, predicciones DESC
+        """,
+        tuple(params),
+    )
+
 def show_position_evolution(user_tz):
     st.markdown("### 📈 Evolución de posiciones")
     st.caption("Cómo ha cambiado la posición de cada participante conforme avanzan los partidos.")
@@ -135,53 +171,37 @@ def show_position_evolution(user_tz):
 
     st.plotly_chart(fig, use_container_width=True)
 
-def tab_standings(user_tz):
-    st.subheader("Tabla de clasificación")
-    standings = read_df(
-        """
-        SELECT
-            u.name AS jugador,
-            COALESCE(SUM(p.points), 0) AS puntos,
-            COUNT(p.id) AS predicciones,
-            SUM(CASE WHEN p.points = 3 THEN 1 ELSE 0 END) AS marcadores_exactos,
-            SUM(CASE WHEN p.points = 1 THEN 1 ELSE 0 END) AS resultados_acertados
-        FROM users u
-        LEFT JOIN predictions p ON p.user_id = u.id
-        WHERE u.username <> 'modeloxgb'
-        GROUP BY u.id, u.name
-        ORDER BY puntos DESC, marcadores_exactos DESC, resultados_acertados DESC, predicciones DESC
-        """
-    )
-
-    if standings.empty:
-        st.info("Todavía no hay participantes.")
+def show_standings_table(df):
+    if df.empty:
+        st.info("Todavía no hay datos para esta clasificación.")
         return
 
-    standings.insert(0, "posición", range(1, len(standings) + 1))
-    st.dataframe(standings, use_container_width=True, hide_index=True)
+    df = df.copy()
+    df.insert(0, "posición", range(1, len(df) + 1))
+    st.dataframe(df, use_container_width=True, hide_index=True)
+
+def tab_standings(user_tz):
+    st.subheader("Tabla de clasificación")
+
+    st.markdown("### 🏆 Clasificación general")
+    show_standings_table(get_standings())
+
+    st.divider()
+
+    st.markdown("### 📌 Clasificación por fase")
+
+    selected_stage = st.selectbox(
+        "Selecciona la fase",
+        STAGES,
+        index=0
+    )
+
+    show_standings_table(get_standings(selected_stage))
+
     st.divider()
 
     st.markdown("### 🤖 Rendimiento del predictor")
-
-    model_standing = read_df(
-        """
-        SELECT
-            u.name AS jugador,
-            COALESCE(SUM(p.points), 0) AS puntos,
-            COUNT(p.id) AS predicciones,
-            SUM(CASE WHEN p.points = 3 THEN 1 ELSE 0 END) AS marcadores_exactos,
-            SUM(CASE WHEN p.points = 1 THEN 1 ELSE 0 END) AS resultados_acertados
-        FROM users u
-        LEFT JOIN predictions p ON p.user_id = u.id
-        WHERE u.username = 'modeloxgb'
-        GROUP BY u.id, u.name
-        """
-    )
-
-    if model_standing.empty:
-        st.info("El predictor todavía no tiene predicciones registradas.")
-    else:
-        st.dataframe(model_standing, use_container_width=True, hide_index=True)
+    show_standings_table(get_standings(modeloxgb=True))
 
     st.divider()
     show_position_evolution(user_tz)
